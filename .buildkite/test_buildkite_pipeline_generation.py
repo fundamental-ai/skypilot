@@ -172,8 +172,11 @@ def test_generate_same_as_pytest(args):
         env['PYTHONPATH'] = f"{pathlib.Path.cwd()}/tests:" \
                             f"{env.get('PYTHONPATH', '')}"
 
+        script_dir = pathlib.Path(__file__).resolve().parent
+        wrapper = script_dir / 'run_with_python.sh'
+        generator = script_dir / 'generate_pipeline.py'
         subprocess.run(
-            ['python', '.buildkite/generate_pipeline.py', '--args', args],
+            [str(wrapper), str(generator), '--args', args],
             env=env,
             check=True)
 

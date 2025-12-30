@@ -16,6 +16,10 @@ on:
         default: false
         type: boolean
 
+permissions:
+  contents: write
+  pages: write
+
 jobs:
   check-date:
     runs-on: ubuntu-latest

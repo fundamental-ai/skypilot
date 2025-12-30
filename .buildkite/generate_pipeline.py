@@ -7,7 +7,8 @@ tests/smoke_tests
 ├── test_*.py -> release pipeline
 ├── test_quick_tests_core.py -> run quick tests on PR before merging
 
-run `PYTHONPATH=$(pwd)/tests:$PYTHONPATH python .buildkite/generate_pipeline.py`
+run `PYTHONPATH=$(pwd)/tests:$PYTHONPATH \
+    .buildkite/run_with_python.sh .buildkite/generate_pipeline.py`
 to generate the pipeline for testing. The CI will run this script as a pre-step,
 and use the generated pipeline to run the tests.
 
