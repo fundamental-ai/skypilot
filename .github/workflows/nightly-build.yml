@@ -1,6 +1,6 @@
 name: nightly-build
 on:
-  schedule:
+  # schedule:
     # - cron: '35 8 * * *' # 08:35 UTC (01:35 PST / 04:35 EST) — original nightly
     # - cron: '0 0 * * *'  # 00:00 UTC (~5:00 PM PT during DST) — tests-only preflight
   workflow_dispatch:
