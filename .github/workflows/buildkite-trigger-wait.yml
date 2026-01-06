@@ -95,7 +95,7 @@ jobs:
     if: ${{ inputs.wait }}
     uses: ./.github/workflows/wait-for-buildkite.yml
     with:
-      organization: "skypilot-1"
+      organization: "fundamental-dot-ai"
       pipeline: ${{ inputs.pipeline }}
       build_number: ${{ needs.extract-buildkite.outputs.build_number }}
       timeout_minutes: ${{ inputs.timeout_minutes }}
