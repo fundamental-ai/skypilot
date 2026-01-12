@@ -7,8 +7,9 @@ and compares the output to the generated pipeline.
 Some parameters in smoke tests requires credentials to setup, so we need to
 run the tests with the credentials.
 
-PYTHONPATH=$(pwd)/tests:$PYTHONPATH \
 pytest -n 0 --dist no .buildkite/test_buildkite_pipeline_generation.py
+
+This script automatically adds $(pwd)/tests to PYTHONPATH for subprocesses.
 
 """
 
@@ -147,6 +148,12 @@ def test_generate_same_as_pytest(args):
         if f.endswith('.py') and f != 'test_quick_tests_core.py'
     ]
 
+    env = dict(os.environ)
+    tests_path = f"{pathlib.Path.cwd()}/tests"
+    existing_pythonpath = env.get('PYTHONPATH', '')
+    env['PYTHONPATH'] = (f"{tests_path}:{existing_pythonpath}"
+                         if existing_pythonpath else tests_path)
+
     pytest_tests = set()
     try:
         # Modify each test file to just print and return
@@ -164,16 +171,16 @@ def test_generate_same_as_pytest(args):
             f"pytest ./tests/test_smoke.py {args}",
             stderr=subprocess.STDOUT,
             text=True,
-            shell=True)
+            shell=True,
+            env=env)
         pytest_tests = set(re.findall(r"test_\w+", pytest_output))
 
         # Generate pipeline and extract test functions using YAML parsing
-        env = dict(os.environ)
-        env['PYTHONPATH'] = f"{pathlib.Path.cwd()}/tests:" \
-                            f"{env.get('PYTHONPATH', '')}"
-
+        script_dir = pathlib.Path(__file__).resolve().parent
+        wrapper = script_dir / 'run_with_python.sh'
+        generator = script_dir / 'generate_pipeline.py'
         subprocess.run(
-            ['python', '.buildkite/generate_pipeline.py', '--args', args],
+            [str(wrapper), str(generator), '--args', args],
             env=env,
             check=True)
 

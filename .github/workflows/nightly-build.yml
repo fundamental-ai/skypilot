@@ -1,8 +1,8 @@
 name: nightly-build
 on:
-  schedule:
-    - cron: '35 8 * * *' # 08:35 UTC (01:35 PST / 04:35 EST) — original nightly
-    - cron: '0 0 * * *'  # 00:00 UTC (~5:00 PM PT during DST) — tests-only preflight
+  # schedule:
+    # - cron: '35 8 * * *' # 08:35 UTC (01:35 PST / 04:35 EST) — original nightly
+    # - cron: '0 0 * * *'  # 00:00 UTC (~5:00 PM PT during DST) — tests-only preflight
   workflow_dispatch:
     inputs:
       skip_buildkite:
@@ -15,6 +15,10 @@ on:
         required: false
         default: false
         type: boolean
+
+permissions:
+  contents: write
+  pages: write
 
 jobs:
   check-date:

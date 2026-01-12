@@ -1,8 +1,8 @@
 name: Release Build
 
 on:
-  schedule:
-    - cron: '0 0 1,15 * *'  # Runs at 00:00 on the 1st and 15th of each month (UTC)
+  # schedule:
+    # - cron: '0 0 1,15 * *'  # Runs at 00:00 on the 1st and 15th of each month (UTC)
   workflow_dispatch:
     inputs:
       release_version:

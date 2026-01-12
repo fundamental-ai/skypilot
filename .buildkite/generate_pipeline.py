@@ -7,8 +7,8 @@ tests/smoke_tests
 ├── test_*.py -> release pipeline
 ├── test_quick_tests_core.py -> run quick tests on PR before merging
 
-run `PYTHONPATH=$(pwd)/tests:$PYTHONPATH python .buildkite/generate_pipeline.py`
-to generate the pipeline for testing. The CI will run this script as a pre-step,
+run `.buildkite/run_with_python.sh .buildkite/generate_pipeline.py`
+to generate the pipeline for testing. The CI will run this script as a pre-step
 and use the generated pipeline to run the tests.
 
 1. release pipeline, which runs all smoke tests by default, generates all
@@ -24,12 +24,24 @@ smoke tests for those clouds are not generated.
 import argparse
 import collections
 import os
+import pathlib
 import re
 import subprocess
+import sys
 import time
 from typing import Any, Dict, List, Optional, Tuple
 
 import click
+
+_REPO_ROOT = pathlib.Path(__file__).resolve().parents[1]
+_TESTS_DIR = _REPO_ROOT / 'tests'
+if _TESTS_DIR.exists():
+    tests_path = str(_TESTS_DIR)
+    if tests_path not in sys.path:
+        # Ensure imports like `import conftest` and `import smoke_tests` work
+        # even when PYTHONPATH is not pre-configured (e.g., on Buildkite agents).
+        sys.path.insert(0, tests_path)
+
 from conftest import all_clouds_in_smoke_tests
 from conftest import cloud_to_pytest_keyword
 from conftest import default_clouds_to_run

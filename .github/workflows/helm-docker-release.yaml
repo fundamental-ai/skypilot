@@ -52,6 +52,7 @@ jobs:
 
   publish-helm:
     needs: [set-package, docker-build]
+    if: ${{ github.repository == 'skypilot-org/skypilot' }}
     uses: ./.github/workflows/publish-helm.yml
     with:
       version: ${{ needs.docker-build.outputs.version }}
