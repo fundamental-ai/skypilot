@@ -83,7 +83,7 @@ RUN ARCH=$(case "${TARGETARCH:-$(uname -m)}" in \
     esac) && \
     echo "Installing session manager plugin for AWS CLI for ${ARCH}" && \
     curl "https://s3.amazonaws.com/session-manager-downloads/plugin/latest/ubuntu_${ARCH}/session-manager-plugin.deb" -o "session-manager-plugin.deb" && \
-    sudo dpkg -i session-manager-plugin.deb && \
+    dpkg -i session-manager-plugin.deb && \
     rm session-manager-plugin.deb
 
 # Install kubectl based on architecture
