@@ -1,6 +1,7 @@
 # Stage 1: Install Google Cloud SDK using APT
 FROM python:3.10.18-slim AS gcloud-apt-install
 
+# hadolint ignore=DL3008,DL3015,DL4006
 RUN apt-get update && \
     apt-get install -y curl gnupg lsb-release && \
     echo "deb [signed-by=/usr/share/keyrings/cloud.google.gpg] https://packages.cloud.google.com/apt cloud-sdk main" > /etc/apt/sources.list.d/google-cloud-sdk.list && \
@@ -21,6 +22,7 @@ ARG INSTALL_FROM_SOURCE=true
 ARG NEXT_BASE_PATH=/dashboard
 
 # Run NPM and node install in a separate step for caching.
+# hadolint ignore=DL3008,DL3015,DL4006
 RUN if [ "$INSTALL_FROM_SOURCE" = "true" ]; then \
         echo "Installing NPM and Node.js for dashboard build" && \
         apt-get update -y && \
@@ -32,6 +34,7 @@ fi
 
 COPY . /skypilot
 
+# hadolint ignore=DL3003
 RUN cd /skypilot && \
     if [ "$INSTALL_FROM_SOURCE" != "true" ]; then \
         echo "Removing source code (wheel installation)" && \
@@ -69,6 +72,7 @@ ARG TARGETARCH
 ARG NEXT_BASE_PATH=/dashboard
 
 # Install system packages
+# hadolint ignore=DL3008,DL3015
 RUN apt-get update -y && \
     apt-get install --no-install-recommends -y \
         git gcc rsync sudo patch openssh-server \
@@ -87,6 +91,7 @@ RUN ARCH=$(case "${TARGETARCH:-$(uname -m)}" in \
     rm session-manager-plugin.deb
 
 # Install kubectl based on architecture
+# shellcheck disable=SC2005
 RUN ARCH=${TARGETARCH:-$(case "$(uname -m)" in \
         "x86_64") echo "amd64" ;; \
         "aarch64") echo "arm64" ;; \
@@ -97,8 +102,10 @@ RUN ARCH=${TARGETARCH:-$(case "$(uname -m)" in \
     rm kubectl
 
 # Install Nebius CLI
+# hadolint ignore=DL4006
 RUN curl -sSL https://storage.eu-north1.nebius.cloud/cli/install.sh | NEBIUS_INSTALL_FOLDER=/usr/local/bin bash
 # Install uv
+# hadolint ignore=DL4006
 RUN curl -LsSf https://astral.sh/uv/install.sh | sh && \
     ~/.local/bin/uv pip install --prerelease allow azure-cli --system && \
     # Upgrade setuptools in base image to mitigate CVE-2024-6345
@@ -112,6 +119,8 @@ RUN curl -LsSf https://astral.sh/uv/install.sh | sh && \
 COPY --from=process-source /skypilot /skypilot
 
 # Install SkyPilot and set up dashboard based on installation method
+# hadolint ignore=DL3003,DL4006
+# shellcheck disable=SC2012
 RUN cd /skypilot && \
     if [ "$INSTALL_FROM_SOURCE" = "true" ]; then \
         echo "Installing from source in editable mode" && \
