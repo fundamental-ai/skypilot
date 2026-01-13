@@ -349,7 +349,7 @@ ingress:
     enabled: false
 
 ingress-nginx:
-  enabled: true
+  enabled: false
   controller:
     allowSnippetAnnotations: true
     service:
