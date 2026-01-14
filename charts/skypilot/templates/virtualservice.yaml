@@ -18,7 +18,5 @@ spec:
   - route:
     - destination:
         host: {{ .Release.Name }}-api-service
-        # port:
-        #   number: {{ .Values.serviceapi.externalPort }}
     timeout: 30s   
 {{ end -}}
