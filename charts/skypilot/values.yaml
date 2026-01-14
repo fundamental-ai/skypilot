@@ -11,10 +11,19 @@ global:
   extraEnvs: null
 
 
+istio:
+  ingress:
+    enabled: true
+    host: skypilot
+    basedomain: basedomain-to-be-replaced-by-pipeline
+    prodDNSName: proddomain-to-be-replaced-by-pipeline
+    prefix: prefix-to-be-replaced-by-pipeline    
+    exposure: internal   
+
 apiService:
   # Docker image to use for the API server. The default value will be updated by the release pipeline to be consistent with the SkyPilot release or nightly build.
   # Refer to https://docs.skypilot.co/en/latest/reference/api-server/helm-values-spec.html#helm-values-apiservice-image for more details.
-  image: berkeleyskypilot/skypilot-nightly:latest
+  image: MYIMAGE:MYTAG
   # Number of replicas to deploy - replicas > 1 is not well tested.
   replicas: 1
   preDeployHook: |-
@@ -257,7 +266,7 @@ storage:
   # Enable/disable persistent storage
   # With this enabled, SkyPilot will use a PV to persist the internal data like states, logs, lock files, catalog, etc.
   # Refer to https://docs.skypilot.co/en/latest/reference/architecture/state.html for more details.
-  enabled: true
+  enabled: false
   # Storage class name - leave empty to use cluster default
   storageClassName: ""
   # Access modes - ReadWriteOnce or ReadWriteMany depending on what is supported by the storage class
@@ -349,7 +358,7 @@ ingress:
     enabled: false
 
 ingress-nginx:
-  enabled: true
+  enabled: false
   controller:
     allowSnippetAnnotations: true
     service:
@@ -548,7 +557,7 @@ securityContext:
 
 # Set the runtime class
 # @schema type: [string, null]
-runtimeClassName:
+# runtimeClassName: kata-without-host-devices
 
 # Set configuration for Prometheus helm chart
 # Refer to https://github.com/prometheus-community/helm-charts/blob/main/charts/prometheus/values.yaml for available values.
