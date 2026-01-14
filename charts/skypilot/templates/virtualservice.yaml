@@ -1,0 +1,24 @@
+{{ if and (ne "prod" .Release.Namespace) (ne "dev" .Release.Namespace) }}
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: {{ .Values.istio.ingress.prefix }}{{ .Values.istio.ingress.host }}.{{ .Values.istio.ingress.basedomain }}
+spec:
+  hosts:
+  - {{ .Values.istio.ingress.prefix }}{{ .Values.istio.ingress.host }}.{{ .Values.istio.ingress.basedomain }}
+  gateways:
+  - istio-system/istio-ingressgateway
+  - mesh
+  {{- if eq .Values.istio.ingress.exposure "external" -}}
+  -external
+  {{- else if eq .Values.istio.ingress.exposure "dev" -}}
+  -dev
+  {{- end }}
+  http:
+  - route:
+    - destination:
+        host: {{ .Release.Name }}-api-service
+        # port:
+        #   number: {{ .Values.serviceapi.externalPort }}
+    timeout: 30s   
+{{ end -}}
