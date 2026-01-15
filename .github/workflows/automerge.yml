@@ -1,0 +1,36 @@
+name: auto-merge
+on:    
+  pull_request:
+    types:
+      - labeled       # run when a pr is labeled
+      - synchronize   # run when a pr is "syncronized" with the head branch (by making more commits)
+  status:             # run when a status update is made
+  workflow_dispatch:  # allow to be run manually by operator
+
+jobs:
+  automerge:
+    runs-on: 
+    - self-hosted
+    - retort-runner
+    container: docker.io/gergorg/node:current-alpine3.16 # # necessary for running ARC with k8s jobs
+    steps:  
+
+    - name: auto-merge
+      uses: "gerg-org/action-automerge@main"
+      env:
+        GITHUB_TOKEN: "${{ secrets.PAT }}"
+        MERGE_METHOD: squash # if we weren't created by the auto-pr process, then we default to squashing, since the PR is likely coming from a feature branch
+        MERGE_METHOD_LABELS: pr/automerge=merge,pr/autosquash=squash,pr/autorebase=rebase
+        LOG: DEBUG
+
+    - name: notify-slack-of-failure
+      uses: gerg-org/action-slack-notify@master
+      env:
+        SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+        SLACK_COLOR: 'red'
+        SLACK_ICON_EMOJI: ':this-is-fine-fire:'
+        SLACK_MESSAGE: ':face_palm: automerge failed'
+        SLACK_TITLE: CI failed
+        SLACK_USERNAME: GH Actions 
+        MSG_MINIMAL: true    
+      if: failure()        
